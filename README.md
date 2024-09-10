@@ -1,5 +1,5 @@
 # Springboot_find-pharmacy
-___
+
 ## 개요
 
 외부 API 와 공공 데이터를 활용하는 목적을 지녔습니다.<br>
