@@ -24,9 +24,44 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
 ---
 spring:
   config:
     activate:
       on-profile: prod
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
+
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
