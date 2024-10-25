@@ -1,5 +1,5 @@
 [client]
-default-character-set=utfmb4
+default-character-set=utf8mb4
 
 [mysql]
 default-character-set=utf8mb4

@@ -18,6 +18,6 @@ services:
       - MARIADB_DATABASE=pharmacy-recommendation
       - MARIADB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     volumes:
-      - ./database/config:/etc/mysql/conf.d
+      - ./database/config:/etc/mysql/config.d
     ports:
       - "3306:3306"

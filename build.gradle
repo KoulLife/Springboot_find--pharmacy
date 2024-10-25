@@ -1,11 +1,15 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.3'
+	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
-	id 'groovy'
+	id	'groovy'	// groovy 추가
 }
 
-group = 'com.tomist'
+test {
+	useJUnitPlatform()
+}
+
+group = 'JDI'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -33,19 +37,26 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.3'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.3'
 
-	// spock
-	testImplementation('org.spockframework:spock-core:2.1-groovy-3.0')
-	testImplementation('org.spockframework:spock-spring:2.1-groovy-3.0')
+//	Spock Setting
+	testImplementation 'org.spockframework:spock-core:2.4-M4-groovy-4.0'
+	testImplementation 'org.spockframework:spock-spring:2.4-M4-groovy-4.0'
 
-	// 런타임에 클래스 기반 spock mock을 만들기 위해 필요
-	testImplementation('net.bytebuddy:byte-buddy:1.12.10')
-}
+//	런타임 클래스 기반 Spock Mock 만들기 위해
+	implementation 'net.bytebuddy:byte-buddy:1.15.5'
 
-bootJar {
-	archiveFileName = 'app.jar'
+//	testcontainers
+	testImplementation "org.testcontainers:spock:1.20.3"
+	testImplementation "org.testcontainers:mariadb:1.20.3"
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootJar{
+	archiveFileName = 'app.jar';
 }
