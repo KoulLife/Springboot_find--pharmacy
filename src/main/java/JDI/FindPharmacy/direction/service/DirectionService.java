@@ -1,6 +1,7 @@
 package JDI.FindPharmacy.direction.service;
 
 import JDI.FindPharmacy.api.dto.DocumentDto;
+import JDI.FindPharmacy.api.service.KakaoCategorySearchService;
 import JDI.FindPharmacy.direction.entity.Direction;
 import JDI.FindPharmacy.direction.repository.DirectionRepository;
 import JDI.FindPharmacy.pharmacy.dto.PharmacyDto;
@@ -26,6 +27,7 @@ public class DirectionService {
 
     private final PharmacySearchService pharmacySearchService;
     private final DirectionRepository directionRepository;
+    private final KakaoCategorySearchService kakaoCategorySearchService;
 
     // Direction 저장
     @Transactional
@@ -58,6 +60,30 @@ public class DirectionService {
                                 .build())
                 .filter(direction -> direction.getDistance() <= RADIUS_KM)
                 .sorted(Comparator.comparing(Direction::getDistance))
+                .limit(MAX_SEARCH_COUNT)
+                .collect(Collectors.toList());
+    }
+
+    public List<Direction> buildDirectionListByCategoryApi(DocumentDto documentDto) {
+
+        // null 인지 체크
+        if (Objects.isNull(documentDto)) return Collections.emptyList();
+
+        // 약국 데이터 조회
+        return kakaoCategorySearchService
+                .requestPharmacyCategorySearch(documentDto.getLatitude(), documentDto.getLongitude(), RADIUS_KM)
+                .getDocumentDtoList()
+                .stream().map(pharmacyDto ->
+                        Direction.builder()
+                                .inputAddress(documentDto.getAddressName())
+                                .inputLatitude(documentDto.getLatitude())
+                                .inputLongitude(documentDto.getLongitude())
+                                .targetPharmacyName(pharmacyDto.getPlaceName())
+                                .targetAddress(pharmacyDto.getAddressName())
+                                .targetLatitude(pharmacyDto.getLatitude())
+                                .targetLongitude(pharmacyDto.getLongitude())
+                                .distance(pharmacyDto.getDistance() * 0.001)
+                                .build())
                 .limit(MAX_SEARCH_COUNT)
                 .collect(Collectors.toList());
     }
