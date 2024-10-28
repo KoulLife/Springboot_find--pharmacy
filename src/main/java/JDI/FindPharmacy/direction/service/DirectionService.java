@@ -2,6 +2,7 @@ package JDI.FindPharmacy.direction.service;
 
 import JDI.FindPharmacy.api.dto.DocumentDto;
 import JDI.FindPharmacy.direction.entity.Direction;
+import JDI.FindPharmacy.direction.repository.DirectionRepository;
 import JDI.FindPharmacy.pharmacy.dto.PharmacyDto;
 import JDI.FindPharmacy.pharmacy.service.PharmacySearchService;
 import java.util.Collections;
@@ -12,6 +13,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -22,6 +25,14 @@ public class DirectionService {
     private static final double RADIUS_KM = 10.0;   // 검색 반경
 
     private final PharmacySearchService pharmacySearchService;
+    private final DirectionRepository directionRepository;
+
+    // Direction 저장
+    @Transactional
+    public List<Direction> saveAll(List<Direction> directionList) {
+        if (CollectionUtils.isEmpty(directionList)) return Collections.emptyList(); // validation 체크
+        return directionRepository.saveAll(directionList);
+    }
 
     // 가장 가까운 약국 3개까지 추천
     public List<Direction> buildDirectionList(DocumentDto documentDto) {
