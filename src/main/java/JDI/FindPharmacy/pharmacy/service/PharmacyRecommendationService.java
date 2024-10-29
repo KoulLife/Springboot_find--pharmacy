@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -22,6 +23,9 @@ public class PharmacyRecommendationService {
 
     private final KakaoAddressSearchService kakaoAddressSearchService;
     private final DirectionService directionService;
+
+    private static final String ROAD_VIEW_BASE_URL = "https://map.kakao.com/link/roadview/";
+    private static final String DIRECTION_BASE_URL = "https://map.kakao.com/link/map/";
 
     public List<OutputDto> recommendPharmacyList(String address) {
         // 고객의 주소(문자열)를 받으면 카카오 API 를 통해 위치 기반 데이터로 변환
@@ -34,8 +38,11 @@ public class PharmacyRecommendationService {
 
         DocumentDto documentDto = kakaoApiResponseDto.getDocumentDtoList().get(0);
 
-//        List<Direction> directionList = directionService.buildDirectionList(documentDto);
-        List<Direction> directionList = directionService.buildDirectionListByCategoryApi(documentDto);
+        // 공공기관 약국 데이터 및 거리 계산 알고리즘
+        List<Direction> directionList = directionService.buildDirectionList(documentDto);
+
+        // kakao 카테고리를 이용한 장소 검색
+        // List<Direction> directionList = directionService.buildDirectionListByCategoryApi(documentDto);
 
         return directionService.saveAll(directionList)
                 .stream()
@@ -44,11 +51,19 @@ public class PharmacyRecommendationService {
     }
 
     private OutputDto convertToOutputDto(Direction direction) {
+
+        String params = String.join(",", direction.getTargetPharmacyName(), String.valueOf(direction.getTargetLatitude()),
+                String.valueOf(direction.getTargetLongitude()));
+
+        String dUrl = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params).toUriString();
+
+        log.info("direction params: {} , url: {}", params, dUrl);
+
         return OutputDto.builder()
                 .pharmacyName(direction.getTargetPharmacyName())
                 .pharmacyAddress(direction.getTargetAddress())
-                .directionUrl("todo")   // todo
-                .roadViewUrl("todo")    // todo
+                .directionUrl(dUrl)
+                .roadViewUrl(ROAD_VIEW_BASE_URL + direction.getTargetLatitude() + "," + direction.getTargetLongitude())
                 .distance(String.format("%.2f km", direction.getDistance()))
                 .build();
     }
