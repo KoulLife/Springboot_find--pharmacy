@@ -36,5 +36,4 @@ public class PharmacyRecommendationService {
 
         directionService.saveAll(directionList);
     }
-
 }
