@@ -51,6 +51,10 @@ dependencies {
 	testImplementation "org.testcontainers:spock:1.20.3"
 	testImplementation "org.testcontainers:mariadb:1.20.3"
 
+	// handlebars
+	implementation 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.5.0'
+
+
 	// spring retry
 	implementation 'org.springframework.retry:spring-retry'
 
